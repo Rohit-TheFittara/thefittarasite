@@ -1,65 +1,185 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
+      {/* Top navigation bar */}
+      <header className="border-b border-slate-800">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-400 to-fuchsia-500" />
+            <span className="font-semibold text-lg">PurpleSeam</span>
+          </div>
+
+          <nav className="hidden md:flex items-center gap-6 text-sm text-slate-300">
+            <a href="#" className="hover:text-white">
+              Platform
+            </a>
+            <a href="#" className="hover:text-white">
+              Features
+            </a>
+            <a href="/pricing" className="hover:text-white">
+              Pricing
+            </a>
+            <a href="#" className="hover:text-white">
+              Blog
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <button className="text-sm text-slate-300 hover:text-white">
+              Log in
+            </button>
+            <button className="px-4 py-2 rounded-full bg-purple-500 hover:bg-purple-400 text-sm font-semibold">
+              Book a demo
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero section */}
+      <section className="flex items-center justify-center px-4 py-12 md:py-20">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-sm font-semibold tracking-wide text-purple-300 mb-2">
+            Platform for women&apos;s ethnic apparel
+          </p>
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+            Build, manage, and grow{" "}
+            <span className="text-purple-400">
+              boutiques and saree brands
+            </span>{" "}
+            online.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-base md:text-lg text-slate-300 mb-8 max-w-2xl">
+            PurpleSeam gives Indian boutiques an end-to-end infrastructure —
+            cataloging, storefront, logistics, and marketing — without needing
+            a tech team or agency.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-4 mb-6">
+            <button className="px-6 py-3 rounded-full bg-purple-500 hover:bg-purple-400 font-semibold text-sm md:text-base">
+              Book a demo
+            </button>
+            <button className="px-6 py-3 rounded-full border border-slate-600 hover:border-slate-400 text-sm md:text-base">
+              Watch product walkthrough
+            </button>
+          </div>
+
+          <p className="text-xs md:text-sm text-slate-500">
+            Designed for boutiques, saree stores, and dress material brands
+            across India. No prior online selling experience required.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* CTA section */}
+      <section className="bg-slate-900 border-t border-slate-800 px-4 py-10 md:py-14">
+        <div className="max-w-4xl mx-auto grid gap-8 md:grid-cols-2 items-start">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-3">
+              Ready to see how PurpleSeam fits your boutique?
+            </h2>
+            <p className="text-sm md:text-base text-slate-300 mb-4">
+              Share a few details and we&apos;ll reach out with a personalised
+              walkthrough, rough sales projections, and a clear next step.
+            </p>
+            <ul className="text-sm text-slate-400 space-y-2">
+              <li>• Tailored demo for saree / dress material businesses</li>
+              <li>• No obligation, no pushy sales</li>
+              <li>• Understand setup effort, costs, and support</li>
+            </ul>
+          </div>
+
+          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-lg shadow-slate-950/40">
+            <form className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Your name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Anjali Patil"
+                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Mobile / WhatsApp number
+                </label>
+                <input
+                  type="tel"
+                  placeholder="e.g. 98xxxxxx10"
+                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Boutique / brand name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Saaj Boutique"
+                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  City
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Pune"
+                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Anything specific you want help with?
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="e.g. Getting my sarees online, handling shipping, WhatsApp marketing…"
+                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
+              <button
+                type="button"
+                className="w-full mt-2 rounded-full bg-purple-500 hover:bg-purple-400 text-sm font-semibold py-2.5"
+              >
+                Request callback
+              </button>
+
+              <p className="text-[11px] text-slate-500 mt-2">
+                By submitting, you agree to be contacted on WhatsApp / phone
+                about PurpleSeam. No spam, ever.
+              </p>
+            </form>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="mt-auto border-t border-slate-800 px-4 py-6 text-xs text-slate-500">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+          <p>
+            © {new Date().getFullYear()} PurpleSeam. All rights reserved.
+          </p>
+          <div className="flex gap-4">
+            <a href="#" className="hover:text-slate-300">
+              Privacy
+            </a>
+            <a href="#" className="hover:text-slate-300">
+              Terms
+            </a>
+            <a href="#" className="hover:text-slate-300">
+              Contact
+            </a>
+          </div>
+        </div>
+      </footer>
+    </main>
   );
 }
