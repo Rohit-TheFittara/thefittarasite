@@ -1,4 +1,44 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+
 export default function Home() {
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Request failed");
+      }
+
+      // Optionally we can read JSON, but we don't need it now:
+      // const data = await res.json();
+
+      // On success, go to thank-you page (browser-side)
+      router.push("/thank-you");
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
       {/* Top navigation bar */}
@@ -89,7 +129,7 @@ export default function Home() {
           </div>
 
           <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-lg shadow-slate-950/40">
-            <form  className="space-y-4"  action="/api/lead"  method="POST" >
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">
                   Your name
@@ -99,6 +139,7 @@ export default function Home() {
                   name="name"
                   placeholder="e.g. Anjali Patil"
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  required
                 />
               </div>
 
@@ -111,6 +152,7 @@ export default function Home() {
                   name="phone"
                   placeholder="e.g. 98xxxxxx10"
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  required
                 />
               </div>
 
@@ -152,10 +194,15 @@ export default function Home() {
 
               <button
                 type="submit"
-                className="w-full mt-2 rounded-full bg-purple-500 hover:bg-purple-400 text-sm font-semibold py-2.5"
+                className="w-full mt-2 rounded-full bg-purple-500 hover:bg-purple-400 text-sm font-semibold py-2.5 disabled:opacity-60"
+                disabled={submitting}
               >
-                Request callback
+                {submitting ? "Sending..." : "Request callback"}
               </button>
+
+              {error && (
+                <p className="text-[11px] text-red-400 mt-2">{error}</p>
+              )}
 
               <p className="text-[11px] text-slate-500 mt-2">
                 By submitting, you agree to be contacted on WhatsApp / phone

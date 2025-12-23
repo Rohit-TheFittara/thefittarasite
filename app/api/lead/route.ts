@@ -27,6 +27,8 @@ export async function POST(request: Request) {
 //     message: "Lead received. We will contact you soon.",
 //   });
 // After processing, redirect to thank-you page
-  const redirectUrl = new URL("/thank-you", request.url);
-  return NextResponse.redirect(redirectUrl);
+  return NextResponse.json({
+    success: true,
+    message: "Lead received. We will contact you soon.",
+  });
 }
