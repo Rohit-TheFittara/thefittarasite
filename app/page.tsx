@@ -89,13 +89,14 @@ export default function Home() {
           </div>
 
           <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-lg shadow-slate-950/40">
-            <form className="space-y-4">
+            <form  className="space-y-4"  action="/api/lead"  method="POST" >
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">
                   Your name
                 </label>
                 <input
                   type="text"
+                  name="name"
                   placeholder="e.g. Anjali Patil"
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
@@ -107,6 +108,7 @@ export default function Home() {
                 </label>
                 <input
                   type="tel"
+                  name="phone"
                   placeholder="e.g. 98xxxxxx10"
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
@@ -118,6 +120,7 @@ export default function Home() {
                 </label>
                 <input
                   type="text"
+                  name="boutique"
                   placeholder="e.g. Saaj Boutique"
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
@@ -129,6 +132,7 @@ export default function Home() {
                 </label>
                 <input
                   type="text"
+                  name="city"
                   placeholder="e.g. Pune"
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
@@ -140,13 +144,14 @@ export default function Home() {
                 </label>
                 <textarea
                   rows={3}
+                  name="note"
                   placeholder="e.g. Getting my sarees online, handling shipping, WhatsApp marketing…"
                   className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
 
               <button
-                type="button"
+                type="submit"
                 className="w-full mt-2 rounded-full bg-purple-500 hover:bg-purple-400 text-sm font-semibold py-2.5"
               >
                 Request callback
