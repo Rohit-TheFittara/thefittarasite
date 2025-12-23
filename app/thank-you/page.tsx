@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function ThankYouPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50 flex items-center justify-center px-4">
@@ -14,12 +16,12 @@ export default function ThankYouPage() {
           If this was a test submission, you can close this tab and continue
           exploring the site.
         </p>
-        <a
+        <Link
           href="/"
           className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-purple-500 hover:bg-purple-400 text-sm font-semibold"
         >
           Back to Fittara
-        </a>
+        </Link>
       </div>
     </main>
   );
