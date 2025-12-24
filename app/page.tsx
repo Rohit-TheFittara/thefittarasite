@@ -1,220 +1,153 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import FittaraHero from "./components/FittaraHero";
+import WhatWeOffer from "./components/WhatWeOffer";
+
 
 export default function Home() {
-  const router = useRouter();
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError(null);
-
-    try {
-      const form = e.currentTarget;
-      const formData = new FormData(form);
-
-      const res = await fetch("/api/lead", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        throw new Error("Request failed");
-      }
-
-      // Optionally we can read JSON, but we don't need it now:
-      // const data = await res.json();
-
-      // On success, go to thank-you page (browser-side)
-      router.push("/thank-you");
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
-      {/* Top navigation bar */}
-      <header className="border-b border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-400 to-fuchsia-500" />
-            <span className="font-semibold text-lg">PurpleSeam</span>
-          </div>
+    <main className="min-h-screen bg-transparent text-slate-900 flex flex-col">
+      <div className="relative overflow-hidden bg-[url('/hero-bg.jpeg')] bg-cover bg-top">
+        <div className="absolute inset-0 bg-white/80" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.12),_transparent_55%)]" />
+        <div className="relative">
+          {/* Top navigation bar */}
+          <header className="border-b border-slate-200/80 bg-white/40 backdrop-blur-sm">
+            <div className="max-w-6xl mx-auto px-4 py-4 md:py-5 grid grid-cols-2 md:grid-cols-[1fr_auto_1fr] items-center gap-4">
+              <div className="flex items-center gap-2">
+                <img
+                  src="/LogoFittara.png"
+                  alt="Fittara"
+                  className="h-8 w-auto"
+                />
+                <span className="font-bold text-lg text-[#6b59fa]">fittara</span>
+              </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm text-slate-300">
-            <a href="#" className="hover:text-white">
-              Platform
-            </a>
-            <a href="#" className="hover:text-white">
-              Features
-            </a>
-            <a href="/pricing" className="hover:text-white">
-              Pricing
-            </a>
-            <a href="#" className="hover:text-white">
-              Blog
-            </a>
-          </nav>
+              <nav className="hidden md:flex items-center justify-center gap-10 text-sm text-slate-600">
+                <a href="#" className="hover:text-slate-900">
+                  Features
+                </a>
+                <a href="/pricing" className="hover:text-slate-900">
+                  Pricing
+                </a>
+                <a href="#" className="hover:text-slate-900">
+                  About Us
+                </a>
+              </nav>
 
-          <div className="flex items-center gap-3">
-            <button className="text-sm text-slate-300 hover:text-white">
-              Log in
-            </button>
-            <button className="px-4 py-2 rounded-full bg-purple-500 hover:bg-purple-400 text-sm font-semibold">
-              Book a demo
-            </button>
-          </div>
+              <div className="hidden md:flex items-center justify-end text-sm text-slate-500">
+                &nbsp;
+              </div>
+            </div>
+          </header>
+        
+          <FittaraHero />
         </div>
-      </header>
+      </div>
+      <WhatWeOffer />
+      {/* Client testimonials */}
+      <section className="bg-[#efeaf3] px-4 py-14 md:py-20">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-center text-2xl md:text-3xl font-semibold text-slate-600 mb-10">
+            Client Testimonials
+          </h2>
 
-      {/* Hero section */}
-      <section className="flex items-center justify-center px-4 py-12 md:py-20">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-sm font-semibold tracking-wide text-purple-300 mb-2">
-            Platform for women&apos;s ethnic apparel
-          </p>
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-            Build, manage, and grow{" "}
-            <span className="text-purple-400">
-              boutiques and saree brands
-            </span>{" "}
-            online.
-          </h1>
-          <p className="text-base md:text-lg text-slate-300 mb-8 max-w-2xl">
-            PurpleSeam gives Indian boutiques an end-to-end infrastructure —
-            cataloging, storefront, logistics, and marketing — without needing
-            a tech team or agency.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4 mb-6">
-            <button className="px-6 py-3 rounded-full bg-purple-500 hover:bg-purple-400 font-semibold text-sm md:text-base">
-              Book a demo
-            </button>
-            <button className="px-6 py-3 rounded-full border border-slate-600 hover:border-slate-400 text-sm md:text-base">
-              Watch product walkthrough
-            </button>
-          </div>
-
-          <p className="text-xs md:text-sm text-slate-500">
-            Designed for boutiques, saree stores, and dress material brands
-            across India. No prior online selling experience required.
-          </p>
-        </div>
-      </section>
-
-      {/* CTA section */}
-      <section className="bg-slate-900 border-t border-slate-800 px-4 py-10 md:py-14">
-        <div className="max-w-4xl mx-auto grid gap-8 md:grid-cols-2 items-start">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-3">
-              Ready to see how PurpleSeam fits your boutique?
-            </h2>
-            <p className="text-sm md:text-base text-slate-300 mb-4">
-              Share a few details and we&apos;ll reach out with a personalised
-              walkthrough, rough sales projections, and a clear next step.
-            </p>
-            <ul className="text-sm text-slate-400 space-y-2">
-              <li>• Tailored demo for saree / dress material businesses</li>
-              <li>• No obligation, no pushy sales</li>
-              <li>• Understand setup effort, costs, and support</li>
-            </ul>
-          </div>
-
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-lg shadow-slate-950/40">
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Your name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="e.g. Anjali Patil"
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Mobile / WhatsApp number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="e.g. 98xxxxxx10"
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Boutique / brand name
-                </label>
-                <input
-                  type="text"
-                  name="boutique"
-                  placeholder="e.g. Saaj Boutique"
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
-                  City
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="e.g. Pune"
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Anything specific you want help with?
-                </label>
-                <textarea
-                  rows={3}
-                  name="note"
-                  placeholder="e.g. Getting my sarees online, handling shipping, WhatsApp marketing…"
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full mt-2 rounded-full bg-purple-500 hover:bg-purple-400 text-sm font-semibold py-2.5 disabled:opacity-60"
-                disabled={submitting}
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              {
+                name: "Sheetal Sugandhi",
+                handle: "@Sanskritubysheetal",
+                brand: "Sanskriti by Sheetal",
+                note:
+                  "I had a wonderful experience with Fittara. The process was so easy and smooth. I even made my first delivery in 2 days.",
+                date: "10 Oct, 2025",
+                accent: "bg-orange-500",
+              },
+              {
+                name: "Reena Patil",
+                handle: "@Dreamsboutique",
+                brand: "Dreams Boutique",
+                note:
+                  "The 3D experience was fantastic. My client got to see the garments in 360 degrees.",
+                date: "10 Oct, 2025",
+                accent: "bg-emerald-500",
+              },
+              {
+                name: "Devina Mehra",
+                handle: "@Eksoot",
+                brand: "Eksoot",
+                note:
+                  "The photography process was so simple and easy. They have beautiful options to choose from without the hassle of shoots.",
+                date: "10 Oct, 2025",
+                accent: "bg-amber-600",
+              },
+              {
+                name: "Priti Pishwikar",
+                handle: "@Fabzone",
+                brand: "Fabzone",
+                note:
+                  "I had a wonderful experience with Fittara. The process was so easy and smooth. I even made my first delivery in 2 days.",
+                date: "10 Oct, 2025",
+                accent: "bg-slate-800",
+              },
+              {
+                name: "Rohit Magdum",
+                handle: "@Kasmira",
+                brand: "Kasmira",
+                note:
+                  "I had a wonderful experience with Fittara. The process was so easy and smooth. I even made my first delivery in 2 days.",
+                date: "10 Oct, 2025",
+                accent: "bg-slate-800",
+              },
+              {
+                name: "Arav Khanna",
+                handle: "@Aravkhanna",
+                brand: "Aravkhanna",
+                note:
+                  "I had a wonderful experience with Fittara. The process was so easy and smooth. I even made my first delivery in 2 days.",
+                date: "10 Oct, 2025",
+                accent: "bg-slate-800",
+              },
+            ].map((card) => (
+              <div
+                key={card.handle}
+                className="bg-white rounded-2xl border border-slate-200 shadow-md shadow-slate-300/40 p-6 flex flex-col min-h-[220px]"
               >
-                {submitting ? "Sending..." : "Request callback"}
-              </button>
-
-              {error && (
-                <p className="text-[11px] text-red-400 mt-2">{error}</p>
-              )}
-
-              <p className="text-[11px] text-slate-500 mt-2">
-                By submitting, you agree to be contacted on WhatsApp / phone
-                about PurpleSeam. No spam, ever.
-              </p>
-            </form>
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900">
+                      {card.name}
+                    </h3>
+                    <p className="text-xs text-slate-500">{card.handle}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <span className={`h-6 w-6 rounded ${card.accent}`} />
+                      <div>
+                        <p className="text-xs font-semibold text-slate-700">
+                          {card.brand}
+                        </p>
+                        <p className="text-[10px] text-slate-400">
+                          Powered by Fittara
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed flex-1">
+                  {card.note}
+                </p>
+                <p className="text-xs text-slate-400 mt-4 text-right">
+                  {card.date}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-800 px-4 py-6 text-xs text-slate-500">
+      <footer className="mt-auto border-t border-slate-800/80 px-4 py-6 text-xs text-slate-500">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <p>
             © {new Date().getFullYear()} PurpleSeam. All rights reserved.
@@ -235,3 +168,4 @@ export default function Home() {
     </main>
   );
 }
+
