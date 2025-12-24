@@ -9,6 +9,12 @@ export default function WhatWeOffer() {
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const spinRemainingRef = useRef(0);
   const allowHoverTimeoutRef = useRef<number | null>(null);
+  const spinTimeoutRef = useRef<Record<string, number>>({});
+  const returnTimeoutRef = useRef<Record<string, number>>({});
+  const activeVideoIdRef = useRef<string | null>(null);
+  const activeVideoPhaseRef = useRef<"idle" | "spinning" | "playing" | "returning">(
+    "idle"
+  );
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [activeVideoPhase, setActiveVideoPhase] = useState<
     "idle" | "spinning" | "playing" | "returning"
@@ -16,6 +22,11 @@ export default function WhatWeOffer() {
   const [animateIn, setAnimateIn] = useState(false);
   const [allowHoverSpin, setAllowHoverSpin] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    activeVideoIdRef.current = activeVideoId;
+    activeVideoPhaseRef.current = activeVideoPhase;
+  }, [activeVideoId, activeVideoPhase]);
 
   useEffect(() => {
     const storageKey = "fittara_tiles_spin_in";
@@ -49,6 +60,14 @@ export default function WhatWeOffer() {
       if (allowHoverTimeoutRef.current) {
         window.clearTimeout(allowHoverTimeoutRef.current);
       }
+      Object.values(spinTimeoutRef.current).forEach((timeoutId) => {
+        window.clearTimeout(timeoutId);
+      });
+      spinTimeoutRef.current = {};
+      Object.values(returnTimeoutRef.current).forEach((timeoutId) => {
+        window.clearTimeout(timeoutId);
+      });
+      returnTimeoutRef.current = {};
       if (typeof mediaQuery.removeEventListener === "function") {
         mediaQuery.removeEventListener("change", handleMotionPreference);
       } else {
@@ -116,6 +135,20 @@ export default function WhatWeOffer() {
     }
   }
 
+  function clearSpinTimeout(id: string) {
+    if (spinTimeoutRef.current[id]) {
+      window.clearTimeout(spinTimeoutRef.current[id]);
+      delete spinTimeoutRef.current[id];
+    }
+  }
+
+  function clearReturnTimeout(id: string) {
+    if (returnTimeoutRef.current[id]) {
+      window.clearTimeout(returnTimeoutRef.current[id]);
+      delete returnTimeoutRef.current[id];
+    }
+  }
+
   return (
     <section className="relative z-10 -mt-10 md:-mt-16 rounded-t-[32px] md:rounded-t-[40px] bg-white/95 text-slate-900 px-4 py-14 md:py-20 shadow-[0_-12px_30px_rgba(15,23,42,0.08)]">
       <div
@@ -146,7 +179,7 @@ export default function WhatWeOffer() {
             <div key={item.id} className="relative w-full md:max-w-[280px]">
               {item.id === "website" ? (
                 <div
-                  className={`transition-opacity duration-200 ease-out ${
+                  className={`pointer-events-none transition-opacity duration-200 ease-out ${
                     activeVideoId === item.id && activeVideoPhase === "playing"
                       ? "opacity-0"
                       : "opacity-100"
@@ -194,6 +227,7 @@ export default function WhatWeOffer() {
                     activeVideoId === item.id &&
                     activeVideoPhase === "spinning"
                   ) {
+                    clearSpinTimeout(item.id);
                     setActiveVideoPhase("playing");
                     const video = videoRefs.current[item.id];
                     if (video) {
@@ -207,6 +241,8 @@ export default function WhatWeOffer() {
                     activeVideoId === item.id &&
                     activeVideoPhase === "returning"
                   ) {
+                    clearSpinTimeout(item.id);
+                    clearReturnTimeout(item.id);
                     setActiveVideoPhase("idle");
                     setActiveVideoId(null);
                   }
@@ -242,24 +278,51 @@ export default function WhatWeOffer() {
                     return;
                   }
                   setActiveVideoPhase("spinning");
+                  clearSpinTimeout(item.id);
+                  spinTimeoutRef.current[item.id] = window.setTimeout(() => {
+                    if (
+                      activeVideoIdRef.current === item.id &&
+                      activeVideoPhaseRef.current === "spinning"
+                    ) {
+                      setActiveVideoPhase("playing");
+                      const video = videoRefs.current[item.id];
+                      if (video) {
+                        video.currentTime = 0;
+                        void video.play();
+                      }
+                    }
+                  }, 1200);
                 }}
                 onMouseLeave={() => {
                   if (!item.videoSrc) {
                     return;
                   }
-                if (activeVideoId !== item.id) {
-                  return;
-                }
-                if (activeVideoPhase === "playing") {
+                  if (activeVideoId !== item.id) {
+                    return;
+                  }
+                  if (activeVideoPhase === "playing") {
+                    stopVideo(item.id);
+                    clearSpinTimeout(item.id);
+                    setActiveVideoPhase("returning");
+                    clearReturnTimeout(item.id);
+                    returnTimeoutRef.current[item.id] = window.setTimeout(() => {
+                      if (
+                        activeVideoIdRef.current === item.id &&
+                        activeVideoPhaseRef.current === "returning"
+                      ) {
+                        setActiveVideoPhase("idle");
+                        setActiveVideoId(null);
+                      }
+                    }, 1200);
+                    return;
+                  }
+                  clearSpinTimeout(item.id);
+                  clearReturnTimeout(item.id);
+                  setActiveVideoPhase("idle");
+                  setActiveVideoId(null);
                   stopVideo(item.id);
-                  setActiveVideoPhase("returning");
-                  return;
-                }
-                setActiveVideoPhase("idle");
-                setActiveVideoId(null);
-                stopVideo(item.id);
-              }}
-            >
+                }}
+              >
               {item.videoSrc ? (
                 <div
                   className={`absolute inset-0 transition-opacity duration-200 ease-out ${
@@ -326,8 +389,8 @@ export default function WhatWeOffer() {
                   </button>
                 </div>
               </div>
-              </div>
             </div>
+          </div>
           ))}
         </div>
 
