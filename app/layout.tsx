@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "PurpleSeam – Platform for Women’s Ethnic Apparel",
   description:
     "PurpleSeam is an end-to-end platform for Indian boutiques and ethnic apparel brands to manage catalog, storefront, logistics, and marketing.",
+  icons: {
+    icon: "/LogoFittara.ico",
+  },
 };
 
 export default function RootLayout({

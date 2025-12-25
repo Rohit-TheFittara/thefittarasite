@@ -7,73 +7,23 @@ const openSans = Open_Sans({ subsets: ["latin"], weight: ["600", "700"] });
 
 export default function WhatWeOffer() {
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
-  const spinRemainingRef = useRef(0);
-  const allowHoverTimeoutRef = useRef<number | null>(null);
-  const spinTimeoutRef = useRef<Record<string, number>>({});
-  const returnTimeoutRef = useRef<Record<string, number>>({});
-  const activeVideoIdRef = useRef<string | null>(null);
-  const activeVideoPhaseRef = useRef<"idle" | "spinning" | "playing" | "returning">(
+  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [activeVideoPhase, setActiveVideoPhase] = useState<"idle" | "playing">(
     "idle"
   );
-  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
-  const [activeVideoPhase, setActiveVideoPhase] = useState<
-    "idle" | "spinning" | "playing" | "returning"
-  >("idle");
-  const [animateIn, setAnimateIn] = useState(false);
-  const [allowHoverSpin, setAllowHoverSpin] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [showWaitlistPopup, setShowWaitlistPopup] = useState(false);
+  const [leadNumber, setLeadNumber] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
-    activeVideoIdRef.current = activeVideoId;
-    activeVideoPhaseRef.current = activeVideoPhase;
-  }, [activeVideoId, activeVideoPhase]);
-
-  useEffect(() => {
-    const storageKey = "fittara_tiles_spin_in";
     if (typeof window === "undefined") {
       return;
     }
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const handleMotionPreference = () => {
-      setPrefersReducedMotion(mediaQuery.matches);
-      if (mediaQuery.matches) {
-        setAllowHoverSpin(true);
-      }
-    };
-    handleMotionPreference();
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", handleMotionPreference);
-    } else {
-      mediaQuery.addListener(handleMotionPreference);
+    const numberKey = "fittara_lead_number";
+    const storedNumber = sessionStorage.getItem(numberKey);
+    if (storedNumber) {
+      setLeadNumber(storedNumber);
     }
-    if (sessionStorage.getItem(storageKey) !== "1") {
-      spinRemainingRef.current = items.length;
-      setAnimateIn(true);
-      sessionStorage.setItem(storageKey, "1");
-      allowHoverTimeoutRef.current = window.setTimeout(() => {
-        setAllowHoverSpin(true);
-      }, 1200);
-      return;
-    }
-    setAllowHoverSpin(true);
-    return () => {
-      if (allowHoverTimeoutRef.current) {
-        window.clearTimeout(allowHoverTimeoutRef.current);
-      }
-      Object.values(spinTimeoutRef.current).forEach((timeoutId) => {
-        window.clearTimeout(timeoutId);
-      });
-      spinTimeoutRef.current = {};
-      Object.values(returnTimeoutRef.current).forEach((timeoutId) => {
-        window.clearTimeout(timeoutId);
-      });
-      returnTimeoutRef.current = {};
-      if (typeof mediaQuery.removeEventListener === "function") {
-        mediaQuery.removeEventListener("change", handleMotionPreference);
-      } else {
-        mediaQuery.removeListener(handleMotionPreference);
-      }
-    };
   }, []);
   const items = [
     {
@@ -135,17 +85,11 @@ export default function WhatWeOffer() {
     }
   }
 
-  function clearSpinTimeout(id: string) {
-    if (spinTimeoutRef.current[id]) {
-      window.clearTimeout(spinTimeoutRef.current[id]);
-      delete spinTimeoutRef.current[id];
-    }
-  }
-
-  function clearReturnTimeout(id: string) {
-    if (returnTimeoutRef.current[id]) {
-      window.clearTimeout(returnTimeoutRef.current[id]);
-      delete returnTimeoutRef.current[id];
+  function playVideo(id: string) {
+    const video = videoRefs.current[id];
+    if (video) {
+      video.currentTime = 0;
+      void video.play();
     }
   }
 
@@ -177,150 +121,59 @@ export default function WhatWeOffer() {
         <div className="grid gap-6 md:grid-cols-3 md:justify-items-center tile-perspective">
           {items.map((item) => (
             <div key={item.id} className="relative w-full md:max-w-[280px]">
-              {item.id === "website" ? (
+              {item.videoSrc ? (
                 <div
-                  className={`pointer-events-none transition-opacity duration-200 ease-out ${
+                  className={`transition-opacity duration-200 ease-out ${
                     activeVideoId === item.id && activeVideoPhase === "playing"
                       ? "opacity-0"
                       : "opacity-100"
                   }`}
                 >
-                  <div className="pointer-events-none absolute right-5 top-5 z-10 h-10 w-10 rounded-full bg-white shadow-md shadow-purple-200/60 ring-1 ring-purple-100">
-                    <div className="absolute inset-[7px] rounded-full bg-[conic-gradient(from_120deg,_#5b47ff,_#ff5ea0,_#6cc8ff,_#5b47ff)] opacity-80" />
-                    <div className="absolute inset-[10px] rounded-full bg-white" />
-                    <div className="absolute left-1/2 top-1/2 h-[20px] w-[1px] -translate-x-1/2 -translate-y-1/2 bg-purple-200" />
-                    <div className="absolute left-1/2 top-1/2 h-[1px] w-[20px] -translate-x-1/2 -translate-y-1/2 bg-purple-200" />
-                  </div>
-                  <div className="pointer-events-none absolute right-0 top-24 z-10 w-[92px] translate-x-1/2 rounded-2xl bg-white p-2 shadow-lg shadow-slate-200/60 ring-1 ring-slate-100">
+                  {item.id === "website" ? (
+                    <div className="pointer-events-none absolute right-5 top-5 z-10 h-10 w-10 rounded-full bg-white shadow-md shadow-purple-200/60 ring-1 ring-purple-100">
+                      <div className="absolute inset-[7px] rounded-full bg-[conic-gradient(from_120deg,_#5b47ff,_#ff5ea0,_#6cc8ff,_#5b47ff)] opacity-80" />
+                      <div className="absolute inset-[10px] rounded-full bg-white" />
+                      <div className="absolute left-1/2 top-1/2 h-[20px] w-[1px] -translate-x-1/2 -translate-y-1/2 bg-purple-200" />
+                      <div className="absolute left-1/2 top-1/2 h-[1px] w-[20px] -translate-x-1/2 -translate-y-1/2 bg-purple-200" />
+                    </div>
+                  ) : null}
+                  <div
+                    className={`pointer-events-auto absolute right-0 top-24 z-10 w-[92px] translate-x-1/2 rounded-2xl bg-white p-2 shadow-lg shadow-slate-200/60 ring-1 ring-slate-100 transition-all duration-300 ease-out hover:inset-0 hover:z-20 hover:w-full hover:h-full hover:translate-x-0 hover:rounded-3xl hover:p-4 ${
+                      item.id === "photography" ? "translate-x-[60%]" : ""
+                    }`}
+                  >
                     <video
-                      className="h-[110px] w-full rounded-xl object-cover"
-                      src="/3DTryOnVid.mp4"
+                      className="h-[110px] w-full rounded-xl object-cover transition-all duration-300 ease-out hover:h-full hover:rounded-2xl"
+                      src={item.videoSrc}
                       muted
                       playsInline
                       autoPlay
                       loop
                     />
-                    <div className="mt-2 text-[9px] font-semibold text-slate-500 text-center">
-                      3D Try-On
+                    <div className="mt-2 text-[9px] font-semibold text-slate-500 text-center transition-all duration-300 ease-out hover:text-base">
+                      {item.title}
                     </div>
                   </div>
                 </div>
               ) : null}
               <div
-                className={`tile-3d group relative rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/40 flex flex-col overflow-hidden ${
-                  animateIn ? "motion-safe:animate-[tile-spin-in_1125ms_ease-out_1]" : ""
-                } ${
-                  allowHoverSpin
-                    ? item.videoSrc
-                      ? activeVideoId === item.id && activeVideoPhase === "spinning"
-                        ? "motion-safe:animate-[tile-spin-hover_1125ms_ease-in-out_1]"
-                        : activeVideoId === item.id && activeVideoPhase === "returning"
-                          ? "motion-safe:animate-[tile-spin-hover_1125ms_ease-in-out_1]"
-                        : ""
-                      : "motion-safe:hover:animate-[tile-spin-hover_1125ms_ease-in-out_1]"
-                    : ""
-                }`}
-                onAnimationEnd={(event) => {
-                  if (
-                    event.animationName === "tile-spin-hover" &&
-                    item.videoSrc &&
-                    activeVideoId === item.id &&
-                    activeVideoPhase === "spinning"
-                  ) {
-                    clearSpinTimeout(item.id);
-                    setActiveVideoPhase("playing");
-                    const video = videoRefs.current[item.id];
-                    if (video) {
-                      video.currentTime = 0;
-                      void video.play();
-                    }
-                  }
-                  if (
-                    event.animationName === "tile-spin-hover" &&
-                    item.videoSrc &&
-                    activeVideoId === item.id &&
-                    activeVideoPhase === "returning"
-                  ) {
-                    clearSpinTimeout(item.id);
-                    clearReturnTimeout(item.id);
-                    setActiveVideoPhase("idle");
-                    setActiveVideoId(null);
-                  }
-                  if (!animateIn || spinRemainingRef.current <= 0) {
-                    return;
-                  }
-                  if (event.animationName !== "tile-spin-in") {
-                    return;
-                  }
-                  spinRemainingRef.current -= 1;
-                  if (spinRemainingRef.current === 0) {
-                    setAllowHoverSpin(true);
-                  }
-                }}
-                onMouseEnter={() => {
+                className="tile-3d group relative rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/40 flex flex-col overflow-hidden"
+                onClick={() => {
                   if (!item.videoSrc) {
                     return;
                   }
-                  if (!allowHoverSpin || activeVideoPhase !== "idle") {
+                  if (activeVideoId === item.id && activeVideoPhase === "playing") {
+                    stopVideo(item.id);
+                    setActiveVideoPhase("idle");
+                    setActiveVideoId(null);
                     return;
                   }
                   if (activeVideoId && activeVideoId !== item.id) {
                     stopVideo(activeVideoId);
                   }
                   setActiveVideoId(item.id);
-                  if (prefersReducedMotion) {
-                    setActiveVideoPhase("playing");
-                    const video = videoRefs.current[item.id];
-                    if (video) {
-                      video.currentTime = 0;
-                      void video.play();
-                    }
-                    return;
-                  }
-                  setActiveVideoPhase("spinning");
-                  clearSpinTimeout(item.id);
-                  spinTimeoutRef.current[item.id] = window.setTimeout(() => {
-                    if (
-                      activeVideoIdRef.current === item.id &&
-                      activeVideoPhaseRef.current === "spinning"
-                    ) {
-                      setActiveVideoPhase("playing");
-                      const video = videoRefs.current[item.id];
-                      if (video) {
-                        video.currentTime = 0;
-                        void video.play();
-                      }
-                    }
-                  }, 1200);
-                }}
-                onMouseLeave={() => {
-                  if (!item.videoSrc) {
-                    return;
-                  }
-                  if (activeVideoId !== item.id) {
-                    return;
-                  }
-                  if (activeVideoPhase === "playing") {
-                    stopVideo(item.id);
-                    clearSpinTimeout(item.id);
-                    setActiveVideoPhase("returning");
-                    clearReturnTimeout(item.id);
-                    returnTimeoutRef.current[item.id] = window.setTimeout(() => {
-                      if (
-                        activeVideoIdRef.current === item.id &&
-                        activeVideoPhaseRef.current === "returning"
-                      ) {
-                        setActiveVideoPhase("idle");
-                        setActiveVideoId(null);
-                      }
-                    }, 1200);
-                    return;
-                  }
-                  clearSpinTimeout(item.id);
-                  clearReturnTimeout(item.id);
-                  setActiveVideoPhase("idle");
-                  setActiveVideoId(null);
-                  stopVideo(item.id);
+                  setActiveVideoPhase("playing");
+                  playVideo(item.id);
                 }}
               >
               {item.videoSrc ? (
@@ -345,7 +198,8 @@ export default function WhatWeOffer() {
                       if (activeVideoId !== item.id) {
                         return;
                       }
-                      setActiveVideoPhase("returning");
+                      setActiveVideoPhase("idle");
+                      setActiveVideoId(null);
                       if (videoRefs.current[item.id]) {
                         videoRefs.current[item.id]!.currentTime = 0;
                       }
@@ -385,9 +239,12 @@ export default function WhatWeOffer() {
                     View Demo
                   </button>
                   <button className="flex-1 rounded-lg bg-purple-600 text-white text-sm font-semibold py-2 hover:bg-purple-500">
-                    Register now
+                    Pricing
                   </button>
                 </div>
+                <button className="mt-3 w-full rounded-lg border border-purple-500 text-purple-600 text-sm font-semibold py-2 hover:bg-purple-50">
+                  Register now
+                </button>
               </div>
             </div>
           </div>
@@ -395,14 +252,96 @@ export default function WhatWeOffer() {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <div
-            className={`${openSans.className} text-right text-[20px] leading-[1.36] font-bold text-[#9853F9]`}
+          <button
+            type="button"
+            onClick={() => setShowWaitlistPopup(true)}
+            className={`${openSans.className} text-right text-[20px] leading-[1.36] font-bold text-[#9853F9] hover:text-[#7a2ff5] transition`}
           >
             Men&apos;s wear{" "}
-            <span className="font-semibold text-[#9853F9]">and Jewellery</span>
-          </div>
+            <span className="font-semibold text-[#9853F9]">
+              and Jewellery
+            </span>
+          </button>
         </div>
       </div>
+      {showWaitlistPopup ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm px-4">
+          <div className="relative w-full max-w-md rounded-3xl bg-white px-6 py-8 text-center shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setShowWaitlistPopup(false)}
+              className="absolute right-5 top-4 text-2xl leading-none text-slate-400 hover:text-slate-700"
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              Join our early adopter list
+            </h3>
+            <p className="text-sm text-slate-500 mb-6">
+              Join our early adopter list for Men&apos;s &amp; Jewellery category
+              by clicking submit.
+            </p>
+            {leadNumber ? (
+              <div className="rounded-full border border-slate-200 px-4 py-3 text-sm text-slate-700 mb-4">
+                {leadNumber}
+              </div>
+            ) : (
+              <input
+                type="tel"
+                inputMode="numeric"
+                placeholder="Enter 10-digit mobile number"
+                value={leadNumber}
+                onChange={(event) => setLeadNumber(event.target.value)}
+                className="w-full rounded-full border border-slate-200 px-4 py-3 text-sm text-slate-700 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-200"
+              />
+            )}
+            <div className="grid grid-cols-2 gap-3 mb-5">
+              <button
+                type="button"
+                onClick={() => setSelectedCategory("men")}
+                className={`rounded-full border px-4 py-2 text-sm font-semibold ${
+                  selectedCategory === "men"
+                    ? "border-purple-500 bg-purple-50 text-purple-700"
+                    : "border-slate-200 text-slate-600 hover:border-purple-300 hover:text-purple-700"
+                }`}
+              >
+                Men&apos;s category
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedCategory("jewellery")}
+                className={`rounded-full border px-4 py-2 text-sm font-semibold ${
+                  selectedCategory === "jewellery"
+                    ? "border-purple-500 bg-purple-50 text-purple-700"
+                    : "border-slate-200 text-slate-600 hover:border-purple-300 hover:text-purple-700"
+                }`}
+              >
+                Jewellery
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (!leadNumber) {
+                  return;
+                }
+                if (typeof window !== "undefined") {
+                  sessionStorage.setItem("fittara_lead_number", leadNumber.replace(/\D/g, ""));
+                }
+                if (!selectedCategory) {
+                  return;
+                }
+                setShowWaitlistPopup(false);
+              }}
+              className="w-full rounded-full bg-purple-600 py-3 text-sm font-semibold text-white disabled:opacity-50"
+              disabled={!selectedCategory || !leadNumber}
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
