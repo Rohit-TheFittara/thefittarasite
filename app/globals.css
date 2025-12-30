@@ -58,6 +58,11 @@ body {
   animation: fabric-ink-shift 28s ease-in-out infinite;
 }
 
+#hubspot-welcome-form .hs-form > .hs-form-title,
+#hubspot-welcome-form .hs-richtext {
+  display: none;
+}
+
 @layer utilities {
   .tile-perspective {
     perspective: 1200px;
