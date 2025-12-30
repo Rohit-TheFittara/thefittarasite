@@ -350,6 +350,19 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
         fbq("track", standardEvent, fullPayload, trackOptions);
       }
       fbq("trackCustom", eventName, fullPayload, trackOptions);
+      console.info("[MetaPixel] Fired events", {
+        standardEvent,
+        eventName,
+        payload: fullPayload,
+        eventId,
+      });
+    } else {
+      console.warn("[MetaPixel] fbq not available. Event not sent.", {
+        standardEvent,
+        eventName,
+        payload: fullPayload,
+        eventId,
+      });
     }
   }
 
