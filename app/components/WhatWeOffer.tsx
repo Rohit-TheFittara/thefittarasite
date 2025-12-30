@@ -314,6 +314,14 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
   const t = copy[language];
   const items = t.items;
 
+  function getTestEventCode(): string | null {
+    if (typeof window === "undefined") {
+      return null;
+    }
+    const params = new URLSearchParams(window.location.search);
+    return params.get("test_event_code");
+  }
+
   function trackMetaEvent(eventName: string, payload?: Record<string, string>) {
     if (typeof window === "undefined") {
       return;
@@ -323,7 +331,11 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
     if (!fbq) {
       return;
     }
-    fbq("trackCustom", eventName, payload);
+    const testEventCode = getTestEventCode();
+    const fullPayload = testEventCode
+      ? { ...payload, test_event_code: testEventCode }
+      : payload;
+    fbq("trackCustom", eventName, fullPayload);
   }
 
   function stopVideo(id: string | null) {
