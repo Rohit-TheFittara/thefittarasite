@@ -44,7 +44,7 @@ const copy = {
       {
         id: "website",
         title: "Apparel Brand Website",
-        subtitle: "Go online in 24 Hours",
+      subtitle: "Go online in 24 Hours",
         features: [
           "No high-tech knowledge required",
           "3D visual trial room",
@@ -54,9 +54,10 @@ const copy = {
           "Customer insights",
           "Social media integration",
         ],
-        iconLabel: "WB",
-        videoSrc: "/FullWebsiteVid.mp4",
-      },
+      iconLabel: "WB",
+      iconImage: "/GlobalImage.png",
+      videoSrc: "/FullWebsiteVid.mp4",
+    },
       {
         id: "tryon",
         title: "3D Virtual Trial Room",
@@ -70,9 +71,10 @@ const copy = {
           "Reduce the number of returns",
           "Increase your informed sales",
         ],
-        iconLabel: "360",
-        videoSrc: "/3DTryOnVid3.mp4",
-      },
+      iconLabel: "360",
+      iconImage: "/3D.png",
+      videoSrc: "/3DTryOnVid3.mp4",
+    },
       {
         id: "photography",
         title: "AI Photography",
@@ -84,9 +86,10 @@ const copy = {
           "Save big, with no product shoots",
           "and no photographers",
         ],
-        iconLabel: "AI",
-        videoSrc: "/AiPhotoVid1.mp4",
-      },
+      iconLabel: "AI",
+      iconImage: "/AI.png",
+      videoSrc: "/AiPhotoVid1.mp4",
+    },
     ],
     buttons: {
       viewDemo: "View Demo",
@@ -308,6 +311,18 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
   const t = copy[language];
   const items = t.items;
 
+  function trackMetaEvent(eventName: string, payload?: Record<string, string>) {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void })
+      .fbq;
+    if (!fbq) {
+      return;
+    }
+    fbq("trackCustom", eventName, payload);
+  }
+
   function stopVideo(id: string | null) {
     if (!id) {
       return;
@@ -359,9 +374,9 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 md:justify-items-center tile-perspective">
+        <div className="grid gap-6 md:grid-cols-3 md:items-stretch md:justify-items-stretch tile-perspective">
           {items.map((item) => (
-            <div key={item.id} className="relative w-full md:max-w-[280px]">
+            <div key={item.id} className="relative w-full md:max-w-[280px] md:mx-auto">
               {item.videoSrc ? (
                 <div
                   className={`transition-opacity duration-200 ease-out ${
@@ -398,7 +413,7 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
                 </div>
               ) : null}
               <div
-                className="tile-3d group relative rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/40 flex flex-col overflow-hidden"
+                className="tile-3d group relative h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/40 flex flex-col overflow-hidden"
                 onClick={() => {
                   if (!item.videoSrc) {
                     return;
@@ -459,8 +474,17 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div />
-                  <div className="h-9 w-9 rounded-full border border-purple-200 text-purple-600 flex items-center justify-center text-xs font-semibold">
-                    {item.iconLabel}
+                  <div className="h-9 w-9 rounded-full border border-purple-200 text-purple-600 flex items-center justify-center text-xs font-semibold bg-white">
+                    {item.iconImage ? (
+                      <img
+                        src={item.iconImage}
+                        alt=""
+                        className="h-5 w-5 object-contain"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      item.iconLabel
+                    )}
                   </div>
                 </div>
                 <h3 className="text-lg font-semibold text-purple-600 fabric-reactive mb-2">
@@ -476,7 +500,16 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
                   ))}
                 </ul>
                 <div className="mt-auto flex items-center gap-3">
-                  <button className="flex-1 rounded-lg border border-purple-500 text-purple-600 text-sm font-semibold py-2 hover:bg-purple-50">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackMetaEvent("ViewDemo", {
+                        item_id: item.id,
+                        item_name: item.title,
+                      });
+                    }}
+                    className="flex-1 rounded-lg border border-purple-500 text-purple-600 text-sm font-semibold py-2 hover:bg-purple-50"
+                  >
                     {t.buttons.viewDemo}
                   </button>
                   <button
@@ -502,7 +535,13 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
                 </div>
                 <button
                   type="button"
-                  onClick={() => openRegisterForm(item.id as RegisterFormKey)}
+                  onClick={() => {
+                    trackMetaEvent("RegisterClick", {
+                      item_id: item.id,
+                      item_name: item.title,
+                    });
+                    openRegisterForm(item.id as RegisterFormKey);
+                  }}
                   className="mt-3 w-full rounded-lg border border-purple-500 text-purple-600 text-sm font-semibold py-2 hover:bg-purple-50"
                 >
                   {t.buttons.register}
