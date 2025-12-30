@@ -322,6 +322,16 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
     return params.get("test_event_code");
   }
 
+  function getCookieValue(name: string): string | null {
+    if (typeof document === "undefined") {
+      return null;
+    }
+    const value = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${name}=`));
+    return value ? value.split("=")[1] : null;
+  }
+
   function getEventId(): string {
     if (typeof crypto !== "undefined" && crypto.randomUUID) {
       return crypto.randomUUID();
@@ -350,7 +360,38 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
         fbq("track", standardEvent, fullPayload, trackOptions);
       }
       fbq("trackCustom", eventName, fullPayload, trackOptions);
+      console.info("[MetaPixel] Fired events", {
+        standardEvent,
+        eventName,
+        payload: fullPayload,
+        eventId,
+      });
+    } else {
+      console.warn("[MetaPixel] fbq not available. Event not sent.", {
+        standardEvent,
+        eventName,
+        payload: fullPayload,
+        eventId,
+      });
     }
+
+    const eventSourceUrl = window.location.href;
+    const fbp = getCookieValue("_fbp");
+    const fbc = getCookieValue("_fbc");
+    void fetch("/api/track-meta", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event_name: standardEvent ?? eventName,
+        custom_event_name: eventName,
+        event_id: eventId,
+        event_source_url: eventSourceUrl,
+        test_event_code: testEventCode,
+        fbp,
+        fbc,
+        custom_data: payload,
+      }),
+    }).catch(() => {});
   }
 
   function stopVideo(id: string | null) {
