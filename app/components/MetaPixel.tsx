@@ -30,17 +30,20 @@ export default function MetaPixel() {
         return;
       }
       const fbq = function (...args: unknown[]) {
-        if (fbq.callMethod) {
-          fbq.callMethod.apply(fbq, args);
-        } else {
-          fbq.queue.push(args);
+        const fn = fbq as typeof fbq & {
+          callMethod?: (...args: unknown[]) => void;
+          queue?: unknown[];
+        };
+        if (fn.callMethod) {
+          fn.callMethod.apply(fn, args);
+        } else if (fn.queue) {
+          fn.queue.push(args);
         }
       } as typeof w.fbq & {
         callMethod?: (...args: unknown[]) => void;
-        queue: unknown[];
+        queue?: unknown[];
         loaded?: boolean;
         version?: string;
-        push?: (...args: unknown[]) => void;
       };
       fbq.queue = [];
       fbq.loaded = true;
