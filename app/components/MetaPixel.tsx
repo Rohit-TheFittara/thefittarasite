@@ -42,7 +42,7 @@ export default function MetaPixel() {
       fbq.queue = [];
       w.fbq = fbq;
       w._fbq = fbq;
-      const t = b.createElement(e);
+      const t = b.createElement(e) as HTMLScriptElement;
       t.async = true;
       t.src = v;
       const s = b.getElementsByTagName(e)[0];
