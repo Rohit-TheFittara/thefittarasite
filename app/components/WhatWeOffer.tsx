@@ -322,20 +322,35 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
     return params.get("test_event_code");
   }
 
-  function trackMetaEvent(eventName: string, payload?: Record<string, string>) {
+  function getEventId(): string {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return `evt_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  }
+
+  function trackMetaEvent(
+    eventName: string,
+    payload?: Record<string, string>,
+    standardEvent?: string
+  ) {
     if (typeof window === "undefined") {
       return;
     }
     const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void })
       .fbq;
-    if (!fbq) {
-      return;
-    }
+    const eventId = getEventId();
     const testEventCode = getTestEventCode();
     const fullPayload = testEventCode
       ? { ...payload, test_event_code: testEventCode }
       : payload;
-    fbq("trackCustom", eventName, fullPayload);
+    const trackOptions = { eventID: eventId };
+    if (fbq) {
+      if (standardEvent) {
+        fbq("track", standardEvent, fullPayload, trackOptions);
+      }
+      fbq("trackCustom", eventName, fullPayload, trackOptions);
+    }
   }
 
   function stopVideo(id: string | null) {
@@ -517,11 +532,16 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
                 <div className="mt-auto flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => {
-                      trackMetaEvent("ViewDemo", {
-                        item_id: item.id,
-                        item_name: item.title,
-                      });
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      trackMetaEvent(
+                        "ViewDemo",
+                        {
+                          item_id: item.id,
+                          item_name: item.title,
+                        },
+                        "ViewContent"
+                      );
                     }}
                     className="flex-1 rounded-lg border border-purple-500 text-purple-600 text-sm font-semibold py-2 hover:bg-purple-50"
                   >
@@ -550,11 +570,16 @@ export default function WhatWeOffer({ language }: WhatWeOfferProps) {
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    trackMetaEvent("RegisterClick", {
-                      item_id: item.id,
-                      item_name: item.title,
-                    });
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    trackMetaEvent(
+                      "RegisterClick",
+                      {
+                        item_id: item.id,
+                        item_name: item.title,
+                      },
+                      "Lead"
+                    );
                     openRegisterForm(item.id as RegisterFormKey);
                   }}
                   className="mt-3 w-full rounded-lg border border-purple-500 text-purple-600 text-sm font-semibold py-2 hover:bg-purple-50"
