@@ -14,6 +14,15 @@ type Language = "en" | "hi";
 const copy = {
   en: {
     clientsHeading: "Our Esteemed Clients",
+    launchCompass: {
+      eyebrow: "Pre-launch assessment",
+      title: "Fittara Launch Compass",
+      body:
+        "Fittara's pre-launch assessment to help founders find direction before investing in build or ads.",
+      quote:
+        "\"Don't spend on a website. Don't spend on ads. Before you give money to agencies, platforms -- even us, find your direction.\"",
+      cta: "Open the Launch Compass",
+    },
     popup: {
       title: "Please enter your Whatsapp number",
       body: "In case we loose connection, we will reach out to you here.",
@@ -28,6 +37,15 @@ const copy = {
     },
   },
   hi: {
+    launchCompass: {
+      eyebrow: "Pre-launch assessment",
+      title: "Fittara Launch Compass",
+      body:
+        "Fittara's pre-launch assessment to help founders find direction before investing in build or ads.",
+      quote:
+        "\"Don't spend on a website. Don't spend on ads. Before you give money to agencies, platforms -- even us, find your direction.\"",
+      cta: "Open the Launch Compass",
+    },
     clientsHeading: "हमारे सम्मानित ग्राहक",
     popup: {
       title: "कृपया अपना WhatsApp नंबर दर्ज करें",
@@ -252,8 +270,43 @@ export default function Home() {
             </header>
 
             <FittaraHero language={language} />
-          </div>
         </div>
+      </div>
+        <section
+          id="launch-compass"
+          className="bg-white px-4 py-16 md:py-20"
+        >
+          <div className="max-w-6xl mx-auto grid gap-10 md:grid-cols-[1.1fr_0.9fr] items-center">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+                {t.launchCompass.eyebrow}
+              </p>
+              <h2 className="mt-3 text-3xl md:text-4xl font-semibold text-slate-900">
+                {t.launchCompass.title}
+              </h2>
+              <p className="mt-4 text-base md:text-lg text-slate-600">
+                {t.launchCompass.body}
+              </p>
+              <blockquote className="mt-6 border-l-2 border-[#6b59fa] pl-4 text-slate-700 italic">
+                {t.launchCompass.quote}
+              </blockquote>
+            </div>
+            <a
+              href="/launch-compass"
+              className="group flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-[#f7f4fb] p-8 shadow-lg shadow-slate-200/40 transition hover:-translate-y-1 hover:shadow-xl"
+              aria-label={t.launchCompass.cta}
+            >
+              <img
+                src="/Compass.png"
+                alt="Fittara Launch Compass"
+                className="h-36 w-36 md:h-44 md:w-44 object-contain transition group-hover:rotate-6"
+              />
+              <span className="text-sm font-semibold text-slate-700">
+                {t.launchCompass.cta}
+              </span>
+            </a>
+          </div>
+        </section>
         <WhatWeOffer language={language} />
         {/* Our esteemed clients */}
         <section className="bg-[#efeaf3] px-4 py-14 md:py-20">
