@@ -167,7 +167,7 @@ export default function LaunchCompassPage() {
               href="https://purpleseamdevtest-d3bgh7ddhwewb3hu.centralindia-01.azurewebsites.net/explore/fittaracompass"
               className="inline-flex items-center justify-center rounded-full bg-[#6b59fa] px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-lg shadow-[#6b59fa]/30 hover:bg-[#5a48e5]"
             >
-              Start the Compass (INR 199/-)
+              Start the Compass (INR 99/-)
             </a>
           </div>
         </div>
